@@ -12,7 +12,7 @@ import org.antlr.v4.runtime.Token;
 public class xcc {
 	public static void main(String[] args) throws IOException {
 		String diretorio = Paths.get("").toAbsolutePath().toString()+"/";
-		String arquivo = "fonte.xpp";
+		String arquivo = args[0];
 		
 		CharStream input = CharStreams.fromFileName(diretorio+arquivo);
 
