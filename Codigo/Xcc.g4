@@ -3,7 +3,7 @@
  */ 
 grammar Xcc;
 
-// producoes para o parser. Alguns tokens sao definidos impliscitamente
+// producoes para o parser.
 program : (classlist)?;
 classlist : (classdecl)+;
 classdecl : CLASS IDENT (EXTENDS IDENT)?;
