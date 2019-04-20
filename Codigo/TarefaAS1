@@ -1,0 +1,76 @@
+1. A gramática X++ é recursiva à esquerda? Justifique detalhadamente sua resposta.
+
+Não é recursiva à esquerda.
+
+Definimos formalmente nossa gramática:
+
+Seja G = (Vn, Vt, P, program), onde:
+
+> Vn é o conjunto de símbolos não terminais da gramática 
+> Vt é o conjunto de símbolos terminais da gramática 
+> P é o conjunto de produções da gramática, descritas no arquivo xcc.g4
+> program é o símbolo inicial da gramática
+
+Sejam também:
+> A, B ∈ Vn
+> V = Vn ∪ Vt
+> α, γ ∈ V*
+> β ∈ Vt
+> ⇒+ indica uma derivação em um ou mais passos.
+> φ induca um conjunto vazio.
+
+Sabemos que G é recursiva à esquerda sse ∃ A ⇒+ Aα.
+
+Seja P' o conjunto das produções livres de recursão à esquerda. Portanto, (P - P') é o conjunto de produções que pode ter recursão à esquerda.
+
+Inicializamos P' como vazio. Analizamos cada produção: se ∄ A → Bα | ε (isto é, todas as produções de A são do tipo A → βα), adicionamos A a P':
+
+P' = {classdecl, classbody, vardecl, constructdecl, methoddecl, methodbody, printstat, readstat, returnstat, superstat, ifstat, forstat, lvalue, alocexpression}
+
+Analizamos cada produção em (P - P'): se todas as produções de A são do tipo A → Cα, onde C ∈ P', adicionamos A a P':
+
+P' = P' ∪ {atribstat, factor}
+
+Repetindo este passo algumas vezes:
+
+P' = P' ∪ {statement, statlist, unaryexpr, term, numexpression, expression}
+
+Neste ponto (P - P') = {program, classlist, paramlist, arglist}, pois cada um destes não terminais pode derivar épsilon.
+
+Analizamos cada produção em (P - P'): se  ∄ A → Bα, adicionamos B a P':
+
+P' = P' ∪ {arglist, paramlist}
+
+Neste ponto (P - P') = {program, classlist} 
+Podemos reescrever classlist → (classdecl)+ como classlist → classdecl (classdecl)*, logo, adicionamos classlist a P'. Temos program → classlist | ε. Como classlist ∈ P' e  ∄ A → program α, adicionamos program a P'
+
+Como (P - P') = φ, então não existe recursão à esquerda nesta gramática.
+
+
+2. A gramática X++ está fatorada à esquerda? Se não, fatore.
+
+Sabemos que G está fatorada (à esquerda, para um símbolo) sse:
+>∄ A →  βα | βγ, α ≠ γ (não fatoração direta) e 
+>∄ A →  Bα | βγ, B → βα (não fatoração indireta).
+
+Seja P'' o conjunto das produções fatoradas. Portanto, (P - P') é o conjunto de produções que podem ser não fatoradas.
+
+Inicializamos P'' como vazio. Analizamos cada produção: se ∄ A →  βα | βγ, α ≠ γ, e ∄ A → ε, adicionamos A a P'':
+
+P'' = {classdecl, classbody, vardecl, construcdecl, methoddecl, methodbody, printstat, readstat, returnstat, superstat, ifstat, forstat, lvalue, alocexpression}
+
+Analizamos cada produção: se ∄ A →  Bα | βγ, B → βα, e ∄ A → ε, adicionamos A a P'':
+
+P'' = P'' ∪ {atribstat, factor, unaryexpr, term,  			
+
+
+PROBLEMA: STATEMENT NAO ESTA FATORADO. ARRUMAR
+
+
+
+3. A gramática X++ está em LL(3). Por que o 3?
+
+LL(k) indica que a gramática pode ser analizada por um analisador sintático LL(k), que faz o análise da esquerda pra direita (L = Left to right) e constroi a derivação mais à esquerda (L = leftmost derivation), o k indica quantos símbolos à frente o analisador irá verificar. 
+
+Como a gramática não está fatorada à esquerda para um símbolo nem para dois símbolos, mas sim para três símbolos, então esta gramática é LL(3)
+
