@@ -172,11 +172,11 @@ FIRST'(program) = {(CLASS, IDENT), (ε)}
 classlist → (CLASS IDENT (EXTENDS IDENT)?)+
 FIRST'(classlist) = {(CLASS, IDENT)
 
-classbody → ABRCHAVE (classlist)? (vardecl PTVIR)* (constructdecl)* (methoddecl)* FECHCHAVE;
+classbody → ABRCHAVE (classlist)? (vardecl PTVIR)* (constructdecl)* (methoddecl)* FECHCHAVE
 
-classbody → ABRCHAVE ((classdecl)+)? ((INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR)* (CONSTRUCTOR methodbody)* ( (INT | STRING | IDENT) (ABRCOL FECHCOL)* IDENT methodbody;)* FECHCHAVE;
+classbody → ABRCHAVE ((classdecl)+)? ((INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR)* (CONSTRUCTOR methodbody)* ( (INT | STRING | IDENT) (ABRCOL FECHCOL)* IDENT methodbody)* FECHCHAVE
 
-classbody → ABRCHAVE ((CLASS IDENT (EXTENDS IDENT)? classbody)+)? ((INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR)* (CONSTRUCTOR methodbody)* ( (INT | STRING | IDENT) (ABRCOL FECHCOL)* IDENT methodbody;)* FECHCHAVE;
+classbody → ABRCHAVE ((CLASS IDENT (EXTENDS IDENT)? classbody)+)? ((INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR)* (CONSTRUCTOR methodbody)* ( (INT | STRING | IDENT) (ABRCOL FECHCOL)* IDENT methodbody)* FECHCHAVE
 
 FIRST'(classbody) = {(ABRCHAVE, CLASS)} ∪
 		{(ABRCHAVE, INT), (ABRCHAVE, STRING), (ABRCHAVE IDENT)}∪
