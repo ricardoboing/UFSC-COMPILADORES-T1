@@ -144,11 +144,11 @@ Agora, a gramática está fatorada à esquerda, para um símbolo; isto é, é LL
 LL(k) indica que a gramática pode ser analizada por um analisador sintático LL(k), que faz o análise da esquerda pra direita (L = Left to right) e constroi a derivação mais à esquerda (L = leftmost derivation), o k indica quantos símbolos à frente o analisador irá verificar. 
 
 Vamos rever alguns conceitos:
-Dizemos que uma gramática está fatorada se qualquer palavra puder ser derivada de forma determinística, isto é, ∃! produção A → βα, ∀ β ∈ Vt e ∀ A ∈ Vn. Ou seja, consultamos um símbolo à frente. Por exemplo:
+Dizemos que uma gramática está fatorada se qualquer palavra puder ser derivada de forma determinística, isto é, ∃! produção A → βα, ∀ A ∈ Vn. Ou seja, consultamos um símbolo à frente. Por exemplo:
 
 S → aS | bS | c
 
-Porém, este conceito pode ser extendido: podemos dizer que uma gramática está fatorada para dois símbolos se qualquer palavra puder ser derivada de forma determinística, mas consultando dois símbolos à frente, isto é, ∃! produção A → β𝛿α, ∀ β, 𝛿 ∈ Vt e ∀ A ∈ Vn; mas podem existir outras produções A → βθα, θ ≠ 𝛿. Por exemplo:
+Porém, este conceito pode ser extendido: podemos dizer que uma gramática está fatorada para dois símbolos se qualquer palavra puder ser derivada de forma determinística, mas consultando dois símbolos à frente, isto é, ∃! produção A → β𝛿α, ∀ A ∈ Vn; mas podem existir outras produções A → βθα, θ ≠ 𝛿. Por exemplo:
 
 S → abS | acS | d
 
