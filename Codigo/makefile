@@ -9,10 +9,17 @@ compilacao:
 	@echo ""
 	@echo "xcc run lex -----------"
 	@$(_XCC) $(FILE)
-	@echo "Update file ListaDeToken.txt"
 	@mv xcc.java xcc.jbvb
+	@mv Lexema.java Lexema.jbvb
+	@mv OcorrenciaLexema.java OcorrenciaLexema.jbvb
+	@mv TabelaDeSimbolo.java TabelaDeSimbolo.jbvb
+	@mv TokenLexico.java TokenLexico.jbvb
 	@rm *.class
 	@rm *.java
 	@rm *.tokens
 	@rm *.interp
 	@mv xcc.jbvb xcc.java
+	@mv Lexema.jbvb Lexema.java
+	@mv OcorrenciaLexema.jbvb OcorrenciaLexema.java
+	@mv TabelaDeSimbolo.jbvb TabelaDeSimbolo.java
+	@mv TokenLexico.jbvb TokenLexico.java
