@@ -19,7 +19,8 @@ alias grun='java org.antlr.v4.gui.TestRig'</br>
 * 4.1. Com base no arquivo Xcc.g4 o comando make invocará o ANTLR para gerar o analisador léxico e sintático
 * 4.2. Em seguida o analisador léxico é invocado pela classe **xcc.java**, contida na pasta **Codigo** do projeto
 * 4.3. A classe **xcc.java** salvará um arquivo **ListaDeToken.txt** contendo todas as ocorrências de tokens do código fonte, na ordem em que aparecem. Se um token aparecer mais de uma vez, todas as ocorrências dele serão salvas no arquivo
-* 4.4. Os arquivos **.class** e **.java** gerados pelo ANTLR serão removidos (incluindo o parser, que não é para ser entregue no trabalho 1), permanecendo apenas os arquivos úteis
+* 4.4. A classe **xcc.java** também salvará um arquivo **TabelaDeSimbolos.txt**
+* 4.5. Os arquivos **.class** e **.java** gerados pelo ANTLR serão removidos (incluindo o parser, que não é para ser entregue no trabalho 1), permanecendo apenas os arquivos úteis
 
 ## 5. Entendendo a gramática do arquivo **Xcc.g4**
 * 5.1. grammar Xcc deve ser declarado com o nome do arquivo. Se o nome do arquivo fosse oi.g4, então teria de ser declarado grammar oi
