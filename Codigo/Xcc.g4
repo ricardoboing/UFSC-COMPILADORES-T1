@@ -3,10 +3,10 @@
  */ 
 grammar Xcc;
 
-// producoes para o parser.
+// producoes para o analisador sintático (parser):
 program : (classlist)?;
 classlist : (classdecl)+;
-classdecl : CLASS IDENT (EXTENDS IDENT)?;
+classdecl : CLASS IDENT (EXTENDS IDENT)? classbody;
 classbody : ABRCHAVE (classlist)? (vardecl PTVIR)* (constructdecl)* (methoddecl)* FECHCHAVE;
 vardecl : (INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)*;
 constructdecl : CONSTRUCTOR methodbody;
@@ -31,7 +31,7 @@ unaryexpr : (( OPMAIS | OPMENOS ))? factor;
 factor : (INTCONSTANT | STRINGCONSTANT | NULL | lvalue | ABRPAR expression FECHPAR);
 arglist : (expression (VIRG expression)*)?;
 
-// regras do alex, no formato TOKEN : lexema;
+// regras do analisador léxico, no formato TOKEN : lexema;
 CLASS			: 'class';
 EXTENDS 		: 'extends';
 ABRCHAVE 		: '{';
@@ -69,6 +69,8 @@ OPDIV 			: '/';
 OPMOD 			: '%';
 NULL 			: 'null';
 
+
+// fragmentos sao usados para formar regras de algum token, mas nao sao considerados tokens per se.
 fragment LOWERCASE: [a-z];
 fragment UPPERCASE: [A-Z];
 fragment DIGIT: [0-9];
@@ -115,8 +117,9 @@ fragment ESPECIAL:
 
 INTCONSTANT : (DIGIT)+;
 STRINGCONSTANT : ["](LOWERCASE | UPPERCASE | DIGIT | ESPECIAL)*["];
-IDENT : [A-Za-z_][A-Za-z_0-9]*;
-// ANTLR4 resolve a ambiguidade ao usar a primeira declaracao, por isso declaramos 
-// os tokens das palavras reservadas antes do token do IDENT
 
+// ANTLR4 resolve a ambiguidade ao usar a primeira declaracao, por isso declaramos os tokens das palavras reservadas antes do token do IDENT:
+IDENT : [A-Za-z_][A-Za-z_0-9]*;
+
+// desconsideramos espacos em branco, 'tabs' e quebras de linha; para o analisador lexico:
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines

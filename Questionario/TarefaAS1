@@ -15,9 +15,12 @@ Sejam também:
 > A, B ∈ Vn
 > V = Vn ∪ Vt
 > α, γ ∈ V*
-> β ∈ Vt
+> β, 𝛿, θ ∈ Vt
 > ⇒+ indica uma derivação em um ou mais passos.
 > φ induca um conjunto vazio.
+> 'palavra' ou 'sentença' indicam uma sequência de símbolos terminais.
+> ∃ significa 'existe' 
+> ∃! significa 'existe um único'
 
 Sabemos que G é recursiva à esquerda sse ∃ A ⇒+ Aα.
 
@@ -49,28 +52,138 @@ Como (P - P') = φ, então não existe recursão à esquerda nesta gramática.
 
 2. A gramática X++ está fatorada à esquerda? Se não, fatore.
 
-Sabemos que G está fatorada (à esquerda, para um símbolo) sse:
->∄ A →  βα | βγ, α ≠ γ (não fatoração direta) e 
->∄ A →  Bα | βγ, B → βα (não fatoração indireta).
+Sejam f1, f2, ... fn os conjuntos FIRST das produções de A. Sabemos que G está fatorada (à esquerda, para um símbolo) se:
 
-Seja P'' o conjunto das produções fatoradas. Portanto, (P - P') é o conjunto de produções que podem ser não fatoradas.
+∀ A, f1 ∩ f2 ∩ ... ∩ fn = φ 
 
-Inicializamos P'' como vazio. Analizamos cada produção: se ∄ A →  βα | βγ, α ≠ γ, e ∄ A → ε, adicionamos A a P'':
+logo, vamos computar os conjuntos first para cada A, começando pelos triviais:
 
-P'' = {classdecl, classbody, vardecl, construcdecl, methoddecl, methodbody, printstat, readstat, returnstat, superstat, ifstat, forstat, lvalue, alocexpression}
+FIRST(classdecl) = {CLASS}
+FIRST(classbody) = {ABRCHAVE}
+FIRST(vardecl) = {INT, STRING, IDENT}
+FIRST(constructdecl) = {CONSTRUCTOR}
+FIRST(methoddecl) = {INT, STRING, IDENT}
+FIRST(methodbody) = {ABRPAR}
+FIRST(printstat) = {PRINT}
+FIRST(readstat) = {READ}
+FIRST(returnstat) = {RETURN}
+FIRST(superstat) = {SUPER}
+FIRST(ifstat) = {IF}
+FIRST(forstat) = {FOR}
+FIRST(lvalue) = {IDENT}
+FIRST(alocexpression) = {NEW}
 
-Analizamos cada produção: se ∄ A →  Bα | βγ, B → βα, e ∄ A → ε, adicionamos A a P'':
+FIRST(classlist) = FIRST(classdecl) = {CLASS}
+FIRST(paramlist) = {INT, STRING, IDENT, ε}
+FIRST(atribstat) = FIRST(lvalue) = {IDENT}
+FIRST(factor) = {INTCONSTANT, STRINGCONSTANT, NULL, ABRPAR} ∪ FIRST(lvalue) = {INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
 
-P'' = P'' ∪ {atribstat, factor, unaryexpr, term,  			
+FIRST(program) = FIRST(classlist) ∪ {ε} = {CLASS, ε}
+FIRST(unaryexpr) = {OPMAIS, OPMENOS} ∪ FIRST(factor) = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
+FIRST(term) = FIRST(unaryexpr) = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
+FIRST(numexpression) = FIRST(term) = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
+FIRST(expression) = FIRST(numexpression) = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
+FIRST(arglist) = FIRST(expression) ∪ {ε} = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR, ε}
 
+FIRST(statement) = FIRST(vardecl) ∪ FIRST(atribstat) ∪ FIRST(readstat) ∪ FIRST(returnstat) ∪ FIRST(ifstat) ∪ FIRST(forstat) ∪ {ABRCHAVE, BREAK, PTVIR}
+          = {INT, STRING, IDENT} ∪ {IDENT} ∪ {READ} ∪ {RETURN} ∪ {IF} ∪ {FOR} ∪ {ABRCHAVE, BREAK, PTVIR}
+          
+Como podemos ver, {INT, STRING, IDENT} ∩ {IDENT} = {IDENT} ≠  φ. Logo, a primeira e segunda produções de statement não estão fatoradas. Fatoramos:
 
-PROBLEMA: STATEMENT NAO ESTA FATORADO. ARRUMAR
+statement → vardecl PTVIR | atribstat PTVIR
 
+substituindo as produções de vardecl e atribstat:
+
+statement → (INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |  lvalue ATR (expression | alocexpression) PTVIR
+
+substituimos lvalue e isolamos as produções não fatoradas (aquelas que começam com IDENT):
+
+statement → (INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+          IDENT (ABRCOL expression FECHCOL | PONTO IDENT ( ABRPAR arglist FECHPAR )?)* ATR (expression | alocexpression) PTVIR
+
+statement → (INT | STRING) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+            IDENT IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+            IDENT (ABRCOL expression FECHCOL | PONTO IDENT ( ABRPAR arglist FECHPAR )?)* ATR (expression | alocexpression) PTVIR
+
+fatorando a segunda e terceira produções:
+
+statement → (INT | STRING) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+            IDENT statementaux
+
+statementaux → IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+               (ABRCOL expression FECHCOL | PONTO IDENT ( ABRPAR arglist FECHPAR )?)* ATR (expression | alocexpression) PTVIR
+
+conjuntos first das produções acima:
+FIRST'(statement) = {INT, STRING, IDENT}
+FIRST'(statementaux) = {IDENT, ABRCOL, PONTO, ATR}
+
+logo, conseguimos fatorar estas produções. Continuando:
+
+FIRST(statement) = {INT, STRING, IDENT} ∪ {READ} ∪ {RETURN} ∪ {IF} ∪ {FOR} ∪ {ABRCHAVE, BREAK, PTVIR}
+          = {INT, STRING, IDENT, READ, RETURN, IF, FOR, ABRCHAVE, BREAK, PTVIR}          
+FIRST(statementaux) = {IDENT, ABRCOL, PONTO, ATR}
+FIRST(statlist) = FIRST(statement) = {INT, STRING, IDENT, READ, RETURN, IF, FOR, ABRCHAVE, BREAK, PTVIR}
+
+Como já analisamos todas as produções, terminamos.
+
+A gramática fatorada fica idêntica à original, exceto pelas produções de statement, que devem ser substituidas pelas novas:
+
+statement → (INT | STRING) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR | IDENT statementaux |
+            readstat PTVIR | returnstat PTVIR | ifstat | forstat PTVIR | ABRCHAVE statlist FECHCHAVE | BREAK PTVIR | PTVIR;
+
+Também devemos adicionar as novas produções de statementaux:
+
+statementaux → IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+               (ABRCOL expression FECHCOL | PONTO IDENT ( ABRPAR arglist FECHPAR )?)* ATR (expression | alocexpression) PTVIR
+
+Agora, a gramática está fatorada à esquerda, para um símbolo; isto é, é LL(1).
 
 
 3. A gramática X++ está em LL(3). Por que o 3?
 
 LL(k) indica que a gramática pode ser analizada por um analisador sintático LL(k), que faz o análise da esquerda pra direita (L = Left to right) e constroi a derivação mais à esquerda (L = leftmost derivation), o k indica quantos símbolos à frente o analisador irá verificar. 
 
-Como a gramática não está fatorada à esquerda para um símbolo nem para dois símbolos, mas sim para três símbolos, então esta gramática é LL(3)
+Vamos rever alguns conceitos:
+Dizemos que uma gramática está fatorada se qualquer palavra puder ser derivada de forma determinística, isto é, ∃! produção A → βα, ∀ A ∈ Vn. Ou seja, consultamos um símbolo à frente. Por exemplo:
 
+S → aS | bS | c
+
+Porém, este conceito pode ser extendido: podemos dizer que uma gramática está fatorada para dois símbolos se qualquer palavra puder ser derivada de forma determinística, mas consultando dois símbolos à frente, isto é, ∃! produção A → β𝛿α, ∀ A ∈ Vn; mas podem existir outras produções A → βθα, θ ≠ 𝛿. Por exemplo:
+
+S → abS | acS | d
+
+Ao consultar dois símbolos à frente, podemos decidir deterministicamente qual produção utilizar para derivar uma palavra.
+
+Da mesma forma, podemos extender o conceito de FIRST para dois símbolos, neste caso chamaremos de FIRST' para maior clareza. Por exemplo, para a gramática acima:
+
+FIRST'(S) = {(a, b), (a, c), (d)}
+
+Com estas definições em mente, verificamos se a nossa gramática é LL(1): 
+
+Já vimos, na questão 2, que não é LL(1), isto é, não está fatorada para um símbolo.
+
+Verificamos se é LL(2):
+
+Computamos os conjuntos first para dois símbolos (FIRST') para cada A. Para isto, substituimos os símbolos não terminais até obtermos dois terminais no começo de cada sentença (isto é, A → β𝛿α)
+
+program → ((CLASS IDENT (EXTENDS IDENT)? classbody )+)?
+FIRST'(program) = {(CLASS, IDENT), (ε)}
+
+classlist → (CLASS IDENT (EXTENDS IDENT)?)+
+FIRST'(classlist) = {(CLASS, IDENT)
+
+classbody → ABRCHAVE (classlist)? (vardecl PTVIR)* (constructdecl)* (methoddecl)* FECHCHAVE
+
+classbody → ABRCHAVE ((classdecl)+)? ((INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR)* (CONSTRUCTOR methodbody)* ( (INT | STRING | IDENT) (ABRCOL FECHCOL)* IDENT methodbody)* FECHCHAVE
+
+classbody → ABRCHAVE ((CLASS IDENT (EXTENDS IDENT)? classbody)+)? ((INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR)* (CONSTRUCTOR methodbody)* ( (INT | STRING | IDENT) (ABRCOL FECHCOL)* IDENT methodbody)* FECHCHAVE
+
+FIRST'(classbody) = {(ABRCHAVE, CLASS)} ∪
+		{(ABRCHAVE, INT), (ABRCHAVE, STRING), (ABRCHAVE IDENT)}∪
+		{(ABRCHAVE, CONSTRUCTOR)}∪
+		{(ABRCHAVE, INT), (ABRCHAVE, STRING), (ABRCHAVE, IDENT)} ∪
+		{(FECHCHAVE)}
+
+Como a interseção dos conjuntos acima é {(ABRCHAVE, INT), (ABRCHAVE, STRING), (ABRCHAVE, IDENT)} ≠  φ, as produções de classbody não estão fatoradas para dois símbolos, portanto, esta gramática não é LL(2)
+
+Como a gramática não está fatorada à esquerda para um símbolo nem para dois símbolos, então esta gramática é pelo menos LL(3), ou seja, é necessário verificar três símbolos à frente para decidir deterministicamente qual produção utilizar para derivar uma palavra.
