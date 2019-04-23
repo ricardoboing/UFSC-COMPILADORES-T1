@@ -186,4 +186,4 @@ FIRST'(classbody) = {(ABRCHAVE, CLASS)} ∪
 
 Como a interseção dos conjuntos acima é {(ABRCHAVE, INT), (ABRCHAVE, STRING), (ABRCHAVE, IDENT)} ≠  φ, as produções de classbody não estão fatoradas para dois símbolos, portanto, esta gramática não é LL(2)
 
-Como a gramática não está fatorada à esquerda para um símbolo nem para dois símbolos, então esta gramática é pelo menos LL(3)
+Como a gramática não está fatorada à esquerda para um símbolo nem para dois símbolos, então esta gramática é pelo menos LL(3), ou seja, é necessário verificar três símbolos à frente para decidir deterministicamente qual produção utilizar para derivar uma palavra.
