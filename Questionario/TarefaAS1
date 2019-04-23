@@ -137,8 +137,48 @@ Agora, a gramática está fatorada à esquerda, para um símbolo; isto é, é LL
 
 
 3. A gramática X++ está em LL(3). Por que o 3?
-
 LL(k) indica que a gramática pode ser analizada por um analisador sintático LL(k), que faz o análise da esquerda pra direita (L = Left to right) e constroi a derivação mais à esquerda (L = leftmost derivation), o k indica quantos símbolos à frente o analisador irá verificar. 
 
-Como a gramática não está fatorada à esquerda para um símbolo nem para dois símbolos, mas sim para três símbolos, então esta gramática é LL(3)
+Vamos rever alguns conceitos:
+Dizemos que uma gramática está fatorada se qualquer palavra puder ser derivada de forma determinística, isto é, ∃! produção A → βα, ∀ β ∈ Vt e ∀ A ∈ Vn. Ou seja, consultamos um símbolo à frente. Por exemplo:
+
+S → aS | bS | c
+
+Porém, este conceito pode ser extendido: podemos dizer que uma gramática está fatorada para dois símbolos se qualquer palavra puder ser derivada de forma determinística, mas consultando dois símbolos à frente, isto é, ∃! produção A → β𝛿α, ∀ β, 𝛿 ∈ Vt e ∀ A ∈ Vn; mas podem existir outras produções A → βθα, θ ≠ 𝛿. Por exemplo:
+
+S → abS | acS | d
+
+Ao consultar dois símbolos à frente, podemos decidir deterministicamente qual produção utilizar para derivar uma palavra.
+
+Da mesma forma, podemos extender o conceito de FIRST para dois símbolos, neste caso chamaremos de FIRST' para maior clareza. Por exemplo, para a gramática acima:
+
+FIRST'(S) = {(a, b), (a, c), (d)}
+
+Com estas definições em mente, verificamos se a nossa gramática é LL(1): 
+
+Já vimos, na questão 2, que não é LL(1), isto é, não está fatorada para um símbolo.
+
+Verificamos se é LL(2):
+
+Computamos os conjuntos first para dois símbolos (FIRST') para cada A. Para isto, substituimos os símbolos não terminais até obtermos dois terminais no começo de cada sentença (isto é, A → β𝛿α)
+
+program → ((CLASS IDENT (EXTENDS IDENT)? classbody )+)?
+FIRST'(program) = {(CLASS, IDENT), (ε)}
+
+classlist → (CLASS IDENT (EXTENDS IDENT)?)+
+FIRST'(classlist) = {(CLASS, IDENT)
+
+classbody → ABRCHAVE (classlist)? (vardecl PTVIR)* (constructdecl)* (methoddecl)* FECHCHAVE;
+
+classbody → ABRCHAVE ((classdecl)+)? ((INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR)* (CONSTRUCTOR methodbody)* ( (INT | STRING | IDENT) (ABRCOL FECHCOL)* IDENT methodbody;)* FECHCHAVE;
+
+classbody → ABRCHAVE ((CLASS IDENT (EXTENDS IDENT)? classbody)+)? ((INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR)* (CONSTRUCTOR methodbody)* ( (INT | STRING | IDENT) (ABRCOL FECHCOL)* IDENT methodbody;)* FECHCHAVE;
+
+FIRST'(classbody) = {(ABRCHAVE, CLASS)} ∪
+		{(ABRCHAVE, INT), (ABRCHAVE, STRING), (ABRCHAVE IDENT)}∪
+		{(ABRCHAVE, CONSTRUCTOR)}∪
+		{(ABRCHAVE, INT), (ABRCHAVE, STRING), (ABRCHAVE, IDENT)} ∪
+		{(FECHCHAVE)}
+
+Como a interseção dos conjuntos acima é {(ABRCHAVE, INT), (ABRCHAVE, STRING), (ABRCHAVE, IDENT)} ≠  φ, as produções de classbody não estão fatoradas para dois símbolos, portanto, esta gramática não é LL(2)
 
