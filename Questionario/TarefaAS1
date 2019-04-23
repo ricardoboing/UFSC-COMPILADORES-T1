@@ -49,23 +49,91 @@ Como (P - P') = φ, então não existe recursão à esquerda nesta gramática.
 
 2. A gramática X++ está fatorada à esquerda? Se não, fatore.
 
-Sabemos que G está fatorada (à esquerda, para um símbolo) sse:
->∄ A →  βα | βγ, α ≠ γ (não fatoração direta) e 
->∄ A →  Bα | βγ, B → βα (não fatoração indireta).
+Sejam f1, f2, ... fn os conjuntos FIRST das produções de A. Sabemos que G está fatorada (à esquerda, para um símbolo) se:
 
-Seja P'' o conjunto das produções fatoradas. Portanto, (P - P') é o conjunto de produções que podem ser não fatoradas.
+∀ A, f1 ∩ f2 ∩ ... ∩ fn = φ 
 
-Inicializamos P'' como vazio. Analizamos cada produção: se ∄ A →  βα | βγ, α ≠ γ, e ∄ A → ε, adicionamos A a P'':
+logo, vamos computar os conjuntos first para cada A, começando pelos triviais:
 
-P'' = {classdecl, classbody, vardecl, construcdecl, methoddecl, methodbody, printstat, readstat, returnstat, superstat, ifstat, forstat, lvalue, alocexpression}
+FIRST(classdecl) = {CLASS}
+FIRST(classbody) = {ABRCHAVE}
+FIRST(vardecl) = {INT, STRING, IDENT}
+FIRST(constructdecl) = {CONSTRUCTOR}
+FIRST(methoddecl) = {INT, STRING, IDENT}
+FIRST(methodbody) = {ABRPAR}
+FIRST(printstat) = {PRINT}
+FIRST(readstat) = {READ}
+FIRST(returnstat) = {RETURN}
+FIRST(superstat) = {SUPER}
+FIRST(ifstat) = {IF}
+FIRST(forstat) = {FOR}
+FIRST(lvalue) = {IDENT}
+FIRST(alocexpression) = {NEW}
 
-Analizamos cada produção: se ∄ A →  Bα | βγ, B → βα, e ∄ A → ε, adicionamos A a P'':
+FIRST(classlist) = FIRST(classdecl) = {CLASS}
+FIRST(paramlist) = {INT, STRING, IDENT, ε}
+FIRST(atribstat) = FIRST(lvalue) = {IDENT}
+FIRST(factor) = {INTCONSTANT, STRINGCONSTANT, NULL, ABRPAR} ∪ FIRST(lvalue) = {INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
 
-P'' = P'' ∪ {atribstat, factor, unaryexpr, term,  			
+FIRST(program) = FIRST(classlist) ∪ {ε} = {CLASS, ε}
+FIRST(unaryexpr) = {OPMAIS, OPMENOS} ∪ FIRST(factor) = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
+FIRST(term) = FIRST(unaryexpr) = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
+FIRST(numexpression) = FIRST(term) = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
+FIRST(expression) = FIRST(numexpression) = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR}
+FIRST(arglist) = FIRST(expression) ∪ {ε} = {OPMAIS, OPMENOS, INTCONSTANT, STRINGCONSTANT, NULL, IDENT, ABRPAR, ε}
 
+FIRST(statement) = FIRST(vardecl) ∪ FIRST(atribstat) ∪ FIRST(readstat) ∪ FIRST(returnstat) ∪ FIRST(ifstat) ∪ FIRST(forstat) ∪ {ABRCHAVE, BREAK, PTVIR}
+          = {INT, STRING, IDENT} ∪ {IDENT} ∪ {READ} ∪ {RETURN} ∪ {IF} ∪ {FOR} ∪ {ABRCHAVE, BREAK, PTVIR}
+          
+Como podemos ver, {INT, STRING, IDENT} ∩ {IDENT} = {IDENT} ≠  φ. Logo, a primeira e segunda produções de statement não estão fatoradas. Fatoramos:
 
-PROBLEMA: STATEMENT NAO ESTA FATORADO. ARRUMAR
+statement → vardecl PTVIR | atribstat PTVIR
 
+substituindo as produções de vardecl e atribstat:
+
+statement → (INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |  lvalue ATR (expression | alocexpression) PTVIR
+
+substituimos lvalue e isolamos as produções não fatoradas (aquelas que começam com IDENT):
+
+statement → (INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+          IDENT (ABRCOL expression FECHCOL | PONTO IDENT ( ABRPAR arglist FECHPAR )?)* ATR (expression | alocexpression) PTVIR
+
+statement → (INT | STRING) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+            IDENT IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+            IDENT (ABRCOL expression FECHCOL | PONTO IDENT ( ABRPAR arglist FECHPAR )?)* ATR (expression | alocexpression) PTVIR
+
+fatorando a segunda e terceira produções:
+
+statement → (INT | STRING) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+            IDENT statementaux
+
+statementaux → IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+               (ABRCOL expression FECHCOL | PONTO IDENT ( ABRPAR arglist FECHPAR )?)* ATR (expression | alocexpression) PTVIR
+
+conjuntos first das produções acima:
+FIRST'(statement) = {INT, STRING, IDENT}
+FIRST'(statementaux) = {IDENT, ABRCOL, PONTO, ATR}
+
+logo, conseguimos fatorar estas produções. Continuando:
+
+FIRST(statement) = {INT, STRING, IDENT} ∪ {READ} ∪ {RETURN} ∪ {IF} ∪ {FOR} ∪ {ABRCHAVE, BREAK, PTVIR}
+          = {INT, STRING, IDENT, READ, RETURN, IF, FOR, ABRCHAVE, BREAK, PTVIR}          
+FIRST(statementaux) = {IDENT, ABRCOL, PONTO, ATR}
+FIRST(statlist) = FIRST(statement) = {INT, STRING, IDENT, READ, RETURN, IF, FOR, ABRCHAVE, BREAK, PTVIR}
+
+Como já analisamos todas as produções, terminamos.
+
+A gramática fatorada fica idêntica à original, exceto pelas produções de statement, que devem ser substituidas pelas novas:
+
+statement → (INT | STRING) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR | IDENT statementaux |
+            readstat PTVIR | returnstat PTVIR | ifstat | forstat PTVIR | ABRCHAVE statlist FECHCHAVE | BREAK PTVIR | PTVIR;
+
+Também devemos adicionar as novas produções de statementaux:
+
+statementaux → IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
+               (ABRCOL expression FECHCOL | PONTO IDENT ( ABRPAR arglist FECHPAR )?)* ATR (expression | alocexpression) PTVIR
+
+Agora, a gramática está fatorada à esquerda, para um símbolo; isto é, é LL(1).
 
 
 3. A gramática X++ está em LL(3). Por que o 3?
