@@ -6,7 +6,7 @@ grammar Xcc;
 // producoes para o analisador sintático (parser):
 program : (classlist)?;
 classlist : (classdecl)+;
-classdecl : CLASS IDENT (EXTENDS IDENT)?;
+classdecl : CLASS IDENT (EXTENDS IDENT)? classbody;
 classbody : ABRCHAVE (classlist)? (vardecl PTVIR)* (constructdecl)* (methoddecl)* FECHCHAVE;
 vardecl : (INT | STRING | IDENT) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)*;
 constructdecl : CONSTRUCTOR methodbody;
