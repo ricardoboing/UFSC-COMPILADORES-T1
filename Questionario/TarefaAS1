@@ -105,7 +105,7 @@ statement → (INT | STRING) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCO
             IDENT IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
             IDENT (ABRCOL expression FECHCOL | PONTO IDENT ( ABRPAR arglist FECHPAR )?)* ATR (expression | alocexpression) PTVIR
 
-fatorando a segunda e terceira produções:
+fatorando a primeira e segunda produções de statement:
 
 statement → (INT | STRING) IDENT (ABRCOL FECHCOL)* (VIRG IDENT ( ABRCOL FECHCOL)*)* PTVIR |
             IDENT statementaux
